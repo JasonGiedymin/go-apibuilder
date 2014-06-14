@@ -4,12 +4,21 @@ import (
   "../api"
   "encoding/json"
   "fmt"
-  "io/ioutil"
-  "net/http"
+  // "io/ioutil"
+  // "net/http"
 )
 
-type ReturnData struct {
-  data []string
+type MockData struct {
+  Data string `json:"data"`
+}
+
+func (rd *MockData) Bytes() []byte {
+  bytes, err := json.Marshal(rd)
+  if err != nil {
+    fmt.Println("Could not marshal data for test server in unit test,", err)
+    return nil
+  }
+  return bytes
 }
 
 type MockApiv10 struct {
@@ -20,22 +29,29 @@ func (mock *MockApiv10) GetSimpleData() string {
   return "200/OK"
 }
 
-func (mock *MockApiv10) ListContainers() (ReturnData, error) {
-  resp, _ := http.Get(mock.api.Url())
-  defer resp.Body.Close()
+func (mock *MockApiv10) ListContainers() (MockData, error) {
+  type respFunc func() interface{}
+  var testFunc = func() interface{} {
+    return nil
+  }
+  respPattern := map[int]respFunc{
+    200: testFunc,
+  }
 
-  if body, err := ioutil.ReadAll(resp.Body); err != nil {
-    fmt.Println("Could not contact endpoint")
-    return ReturnData{}, err
+  fmt.Println("Test:", respPattern)
+
+  route := "/containers"
+  if resp, body, err := mock.api.Get(route); err != nil {
+    fmt.Println("Error getting route", route)
   } else {
     switch resp.StatusCode {
     case 200:
-      var jsonResult ReturnData
+      var jsonResult MockData
+
       if err := json.Unmarshal(body, &jsonResult); err != nil {
-        fmt.Println("Error", err)
-        return ReturnData{}, err
+        fmt.Println("Error trying to unmarshal data,", err)
+        return MockData{}, err
       } else {
-        // Logger.Trace("Containers found for", imageName, ids)
         return jsonResult, nil
       }
     case 404:
@@ -45,5 +61,5 @@ func (mock *MockApiv10) ListContainers() (ReturnData, error) {
     }
   }
 
-  return ReturnData{}, nil
+  return MockData{}, nil
 }
