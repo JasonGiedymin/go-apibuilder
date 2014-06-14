@@ -32,13 +32,18 @@ func (mock *MockApiv10) GetSimpleData() string {
 func (mock *MockApiv10) ListContainers() (MockData, error) {
   type respFunc func() interface{}
   var testFunc = func() interface{} {
+    fmt.Println("hi")
     return nil
   }
   respPattern := map[int]respFunc{
     200: testFunc,
   }
 
-  fmt.Println("Test:", respPattern)
+  if respMethod := respPattern[200]; respMethod == nil {
+    fmt.Println("Bad")
+  } else {
+    respMethod()
+  }
 
   route := "/containers"
   if resp, body, err := mock.api.Get(route); err != nil {
