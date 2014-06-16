@@ -8,8 +8,8 @@ Todo list
   - [x] Abstract URL (golang Url)
   - [x] Abstract out methods
   - [x] Add Response type
-  - [ ] Default/Else method case
-  - [ ] License (Apache2)
+  - [x] License (Apache2)
+  - [~] Default/Else method case
   - [ ] Release?
   - [ ] Docs
   - [ ] Logging

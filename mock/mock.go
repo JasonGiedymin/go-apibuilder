@@ -46,12 +46,17 @@ func (mock *MockApiv10) ListContainers() api.Response {
     return api.Response{string(body), nil}
   }
 
-  // var default = func(body []byte) Response {}
+  var defaultHandler = func(body []byte) api.Response {
+    msg := "Api response not expected. Server sent back: " + string(body)
+    fmt.Println(msg)
+    return api.Response{msg, nil}
+  }
 
   // Mapping status codes to functions
   handler := api.NewResponseHandler()
   handler.AddMethod(200, status200)
   handler.AddMethod(404, status404)
+  handler.AddMethod(0, defaultHandler)
 
   // Get Route and handle response
   route := "/containers"

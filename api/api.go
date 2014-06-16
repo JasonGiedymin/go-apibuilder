@@ -43,15 +43,12 @@ func (handler *ResponseHandler) AddMethod(code int, respFunc RespFunc) {
 // Tested in integration form with a mock api
 func (handler *ResponseHandler) Handle(body []byte, resp *http.Response, returnData interface{}) Response {
   if respMethod := handler.responseMap[resp.StatusCode]; respMethod == nil {
-    fmt.Println("Cannot find response method...")
-    return Response{
-      nil,
-      errors.New(
-        "Response code not mapped, no way to handle " +
-          "this response code. Api library might be out " +
-          "of date. Code: " + string(resp.StatusCode),
-      ),
-    }
+    msg := "Response code not mapped, no way to handle " +
+      "this response code. Api library might be out " +
+      "of date. Code: " + string(resp.StatusCode)
+
+    fmt.Println(msg)
+    return Response{ nil, errors.New(msg) }
   } else {
     return respMethod(body)
   }
