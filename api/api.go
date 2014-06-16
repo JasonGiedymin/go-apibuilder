@@ -1,11 +1,42 @@
 package api
 
 import (
+  "errors"
   "fmt"
   "io/ioutil"
   "net/http"
   "net/url"
 )
+
+type RespFunc func(body []byte) (interface{}, error)
+type ResponseMap map[int]RespFunc
+type ResponseHandler struct {
+  responseMap ResponseMap
+}
+
+func NewResponseHandler() *ResponseHandler {
+  return &ResponseHandler{ResponseMap{}}
+}
+
+func (handler *ResponseHandler) AddMethod(code int, respFunc RespFunc) {
+  if currMethod := handler.responseMap; currMethod[code] == nil {
+    currMethod[code] = respFunc
+  } else {
+    fmt.Println("Method for status code", code, "already added.")
+  }
+}
+
+func (handler *ResponseHandler) Handle(body []byte, resp *http.Response, returnData interface{}) (interface{}, error) {
+  if respMethod := handler.responseMap[resp.StatusCode]; respMethod == nil {
+    fmt.Println("Cannot find response method...")
+    return nil, errors.New(
+      "Response code not mapped, no way to handle " +
+        "this response code. Api library might be out " +
+        "of date. Code: " + string(resp.StatusCode))
+  } else {
+    return respMethod(body)
+  }
+}
 
 type ApiMethod func() interface{}
 
