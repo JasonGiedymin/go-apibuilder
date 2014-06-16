@@ -8,16 +8,29 @@ import (
   "net/url"
 )
 
-type RespFunc func(body []byte) (interface{}, error)
+// Type to describe an Api response (a la Tuple)
+type Response struct {
+  Data interface{} // Data encapsulates actual response
+  Err error // The error if any
+}
+
+// Type which describes (atm) a basic Api response handler method
+type RespFunc func(body []byte) Response
+
+// Type which maps response codes to response handler methods
 type ResponseMap map[int]RespFunc
+
+// Struct holding
 type ResponseHandler struct {
   responseMap ResponseMap
 }
 
+// For convenience
 func NewResponseHandler() *ResponseHandler {
   return &ResponseHandler{ResponseMap{}}
 }
 
+// Adds func to map
 func (handler *ResponseHandler) AddMethod(code int, respFunc RespFunc) {
   if currMethod := handler.responseMap; currMethod[code] == nil {
     currMethod[code] = respFunc
@@ -26,13 +39,19 @@ func (handler *ResponseHandler) AddMethod(code int, respFunc RespFunc) {
   }
 }
 
-func (handler *ResponseHandler) Handle(body []byte, resp *http.Response, returnData interface{}) (interface{}, error) {
+// Simple map lookup, if a func exists it is called else error
+// Tested in integration form with a mock api
+func (handler *ResponseHandler) Handle(body []byte, resp *http.Response, returnData interface{}) Response {
   if respMethod := handler.responseMap[resp.StatusCode]; respMethod == nil {
     fmt.Println("Cannot find response method...")
-    return nil, errors.New(
-      "Response code not mapped, no way to handle " +
-        "this response code. Api library might be out " +
-        "of date. Code: " + string(resp.StatusCode))
+    return Response{
+      nil,
+      errors.New(
+        "Response code not mapped, no way to handle " +
+          "this response code. Api library might be out " +
+          "of date. Code: " + string(resp.StatusCode),
+      ),
+    }
   } else {
     return respMethod(body)
   }
@@ -41,10 +60,6 @@ func (handler *ResponseHandler) Handle(body []byte, resp *http.Response, returnD
 type ApiMethod func() interface{}
 
 type Api struct {
-  // scheme  string
-  // domain  string
-  // port    int
-  // route   string
   url     url.URL
   Methods map[string]ApiMethod
 }
@@ -90,6 +105,9 @@ func (api *Api) Get(route string) (*http.Response, []byte, error) {
     return resp, body, nil
   }
 }
+
+// func (api *Api) Post(...) (*http.Response, []byte, error) {
+// func (api *Api) Put(...) (*http.Response, []byte, error) {
 
 // Creates a NewApi with default params or using
 // a user specified url. 9/10 times you will want

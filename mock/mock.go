@@ -27,23 +27,31 @@ func (mock *MockApiv10) GetSimpleData() string {
   return "200/OK"
 }
 
-func (mock *MockApiv10) ListContainers() (interface{}, error) {
+func (mock *MockApiv10) ListContainers() api.Response {
 
   // Function to handle 200
-  var status200 = func(body []byte) (interface{}, error) {
+  var status200 = func(body []byte) api.Response {
     var jsonResult MockData
 
     if err := json.Unmarshal(body, &jsonResult); err != nil {
       fmt.Println("Error trying to unmarshal data,", err)
-      return MockData{}, err
+      return api.Response{MockData{}, err}
     } else {
-      return jsonResult, nil
+      return api.Response{jsonResult, nil}
     }
   }
+
+  var status404 = func(body []byte) api.Response {
+    fmt.Println("Container not found")
+    return api.Response{string(body), nil}
+  }
+
+  // var default = func(body []byte) Response {}
 
   // Mapping status codes to functions
   handler := api.NewResponseHandler()
   handler.AddMethod(200, status200)
+  handler.AddMethod(404, status404)
 
   // Get Route and handle response
   route := "/containers"
@@ -53,5 +61,5 @@ func (mock *MockApiv10) ListContainers() (interface{}, error) {
     return handler.Handle(body, resp, &MockData{})
   }
 
-  return MockData{}, nil
+  return api.Response{MockData{}, nil}
 }
