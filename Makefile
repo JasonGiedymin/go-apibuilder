@@ -12,7 +12,7 @@ deps:
 updatedeps:
 	@echo "$(OK_COLOR)==> Updating all dependencies$(NO_COLOR)"
 	@go get -d -v -u ./...
-	@echo $(DEPS) | xargs -n1 go get -d -u
+	@echo $(DEPS) | xargs -n1 go get -d -v -u
 
 format:
 	@echo "$(OK_COLOR)==> Formatting$(NO_COLOR)"

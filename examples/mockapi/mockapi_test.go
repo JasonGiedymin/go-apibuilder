@@ -1,7 +1,7 @@
 package main
 
 import (
-  "github.com/JasonGiedymin/go-apibuilder/api"
+  "github.com/JasonGiedymin/go-apibuilder"
   "fmt"
   "net/http"
   "net/http/httptest"

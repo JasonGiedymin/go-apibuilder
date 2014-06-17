@@ -10,9 +10,9 @@ Todo list
   - [x] Add Response type
   - [x] License (Apache2)
   - [x] Default/Else method case
-  - [ ] Rename, namespace changes...
-  - [ ] Examples dir
-  - [ ] Makefile
+  - [x] Rename, namespace changes...
+  - [x] Examples dir
+  - [x] Makefile
   - [ ] Release?
   - [ ] Docs
   - [ ] Logging
