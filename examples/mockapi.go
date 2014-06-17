@@ -1,9 +1,10 @@
 package main
 
 import (
-  "github.com/JasonGiedymin/go-apibuilder"
+  "../"
   "encoding/json"
   "fmt"
+  // "github.com/JasonGiedymin/go-apibuilder"
 )
 
 type MockData struct {

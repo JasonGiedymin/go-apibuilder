@@ -1,8 +1,9 @@
 package main
 
 import (
-  "github.com/JasonGiedymin/go-apibuilder"
   "fmt"
+  // "github.com/JasonGiedymin/go-apibuilder"
+  "../"
   "net/http"
   "net/http/httptest"
   "testing"
@@ -90,7 +91,6 @@ func TestListContainersNoMethod(t *testing.T) {
     }
   }
 }
-
 
 // func TestListContainersDefaultMethod(t *testing.T) {
 //   testToken := MockData{string(http.StatusConflict)}
