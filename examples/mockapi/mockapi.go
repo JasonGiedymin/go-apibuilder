@@ -1,7 +1,7 @@
-package mock
+package main
 
 import (
-  "../api"
+  "github.com/JasonGiedymin/go-apibuilder"
   "encoding/json"
   "fmt"
 )
@@ -20,40 +20,40 @@ func (rd *MockData) Bytes() []byte {
 }
 
 type MockApiv10 struct {
-  api *api.Api
+  api *apibuilder.Api
 }
 
 func (mock *MockApiv10) GetSimpleData() string {
   return "200/OK"
 }
 
-func (mock *MockApiv10) ListContainers() api.Response {
+func (mock *MockApiv10) ListContainers() apibuilder.Response {
 
   // Function to handle 200
-  var status200 = func(body []byte) api.Response {
+  var status200 = func(body []byte) apibuilder.Response {
     var jsonResult MockData
 
     if err := json.Unmarshal(body, &jsonResult); err != nil {
       fmt.Println("Error trying to unmarshal data,", err)
-      return api.Response{MockData{}, err}
+      return apibuilder.Response{MockData{}, err}
     } else {
-      return api.Response{jsonResult, nil}
+      return apibuilder.Response{jsonResult, nil}
     }
   }
 
-  var status404 = func(body []byte) api.Response {
+  var status404 = func(body []byte) apibuilder.Response {
     fmt.Println("Container not found")
-    return api.Response{string(body), nil}
+    return apibuilder.Response{string(body), nil}
   }
 
-  var defaultHandler = func(body []byte) api.Response {
+  var defaultHandler = func(body []byte) apibuilder.Response {
     msg := "Api response not expected. Server sent back: " + string(body)
     fmt.Println(msg)
-    return api.Response{msg, nil}
+    return apibuilder.Response{msg, nil}
   }
 
   // Mapping status codes to functions
-  handler := api.NewResponseHandler()
+  handler := apibuilder.NewResponseHandler()
   handler.AddMethod(200, status200)
   handler.AddMethod(404, status404)
   handler.AddDefault(defaultHandler)
@@ -66,5 +66,5 @@ func (mock *MockApiv10) ListContainers() api.Response {
     return handler.Handle(body, resp, &MockData{})
   }
 
-  return api.Response{MockData{}, nil}
+  return apibuilder.Response{MockData{}, nil}
 }

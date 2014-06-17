@@ -1,4 +1,4 @@
-package api
+package apibuilder
 
 import (
   "testing"

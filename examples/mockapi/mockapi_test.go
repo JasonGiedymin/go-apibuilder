@@ -1,7 +1,7 @@
-package mock
+package main
 
 import (
-  "../api"
+  "github.com/JasonGiedymin/go-apibuilder/api"
   "fmt"
   "net/http"
   "net/http/httptest"
@@ -9,7 +9,7 @@ import (
 )
 
 func TestGetSimpleData(t *testing.T) {
-  if baseApi, err := api.NewApi(""); err != nil {
+  if baseApi, err := apibuilder.NewApi(""); err != nil {
     t.Error("Could not generate new Api")
   } else {
     mockApi := MockApiv10{api: baseApi}
@@ -33,7 +33,7 @@ func TestListContainers200(t *testing.T) {
 
   fmt.Println("Trying URL:", testServer.URL)
 
-  if baseApi, err := api.NewApi(testServer.URL); err != nil {
+  if baseApi, err := apibuilder.NewApi(testServer.URL); err != nil {
     t.Error("Could not generate new Api,", err)
   } else {
     mockApi := MockApiv10{api: baseApi}
@@ -56,7 +56,7 @@ func TestListContainers404(t *testing.T) {
 
   fmt.Println("Trying URL:", testServer.URL)
 
-  if baseApi, err := api.NewApi(testServer.URL); err != nil {
+  if baseApi, err := apibuilder.NewApi(testServer.URL); err != nil {
     t.Error("Could not generate new Api,", err)
   } else {
     mockApi := MockApiv10{api: baseApi}
@@ -80,7 +80,7 @@ func TestListContainersNoMethod(t *testing.T) {
 
   fmt.Println("Trying URL:", testServer.URL)
 
-  if baseApi, err := api.NewApi(testServer.URL); err != nil {
+  if baseApi, err := apibuilder.NewApi(testServer.URL); err != nil {
     t.Error("Could not generate new Api,", err)
   } else {
     mockApi := MockApiv10{api: baseApi}
