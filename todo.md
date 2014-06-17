@@ -9,7 +9,7 @@ Todo list
   - [x] Abstract out methods
   - [x] Add Response type
   - [x] License (Apache2)
-  - [~] Default/Else method case
+  - [x] Default/Else method case
   - [ ] Release?
   - [ ] Docs
   - [ ] Logging

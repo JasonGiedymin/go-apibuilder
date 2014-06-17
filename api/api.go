@@ -11,7 +11,7 @@ import (
 // Type to describe an Api response (a la Tuple)
 type Response struct {
   Data interface{} // Data encapsulates actual response
-  Err error // The error if any
+  Err  error       // The error if any
 }
 
 // Type which describes (atm) a basic Api response handler method
@@ -39,18 +39,40 @@ func (handler *ResponseHandler) AddMethod(code int, respFunc RespFunc) {
   }
 }
 
+// Adds default to map
+func (handler *ResponseHandler) AddDefault(respFunc RespFunc) {
+  code := 0
+  if currMethod := handler.responseMap; currMethod[code] == nil {
+    currMethod[code] = respFunc
+  } else { // this eventually will only be logging
+    fmt.Println("Fyi, default method for status code", code, "already added.")
+  }
+}
+
 // Simple map lookup, if a func exists it is called else error
 // Tested in integration form with a mock api
 func (handler *ResponseHandler) Handle(body []byte, resp *http.Response, returnData interface{}) Response {
-  if respMethod := handler.responseMap[resp.StatusCode]; respMethod == nil {
-    msg := "Response code not mapped, no way to handle " +
-      "this response code. Api library might be out " +
-      "of date. Code: " + string(resp.StatusCode)
+  handleCode := func(code int) Response {
+    if respMethod := handler.responseMap[code]; respMethod == nil {
+      msg := "Response code not mapped, no way to handle " +
+        "this response code. Api library might be out " +
+        "of date. Code: " + string(code)
+      fmt.Println(msg)
+      return Response{nil, errors.New(msg)}
+    } else {
+      return respMethod(body)
+    }
+  }
 
-    fmt.Println(msg)
-    return Response{ nil, errors.New(msg) }
+  // First check status code, then default
+  if response := handleCode(resp.StatusCode); response.Err != nil {
+    if defaultResponse := handleCode(0); defaultResponse.Err != nil {
+      return response // return the original response and error
+    } else {
+      return response
+    }
   } else {
-    return respMethod(body)
+    return response
   }
 }
 

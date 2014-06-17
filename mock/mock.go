@@ -56,7 +56,7 @@ func (mock *MockApiv10) ListContainers() api.Response {
   handler := api.NewResponseHandler()
   handler.AddMethod(200, status200)
   handler.AddMethod(404, status404)
-  handler.AddMethod(0, defaultHandler)
+  handler.AddDefault(defaultHandler)
 
   // Get Route and handle response
   route := "/containers"
